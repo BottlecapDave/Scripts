@@ -72,19 +72,19 @@ def retrieve_templates(client, suffix, targetSuffix, prefix):
     
     return currentTemplates, targetTemplates
 
-def clone_templates(client, currentTemplates, targetTemplates, suffix, targetSuffix):
+def clone_templates(client, currentTemplates, targetTemplates, sourcesuffix, targetSuffix):
     for template in currentTemplates:
-        templateName = template["name"][:len(suffix) * -1]
+        templateName = template["name"][:len(sourcesuffix) * -1]
 
         targetTemplateName = templateName + targetSuffix
-        targetTemplate = get_template(targetTemplates, targetTemplateName)
+        targetTemplate = find_template(targetTemplates, targetTemplateName)
         if targetTemplate == None:
             targetTemplate = create_template(client, targetTemplateName, template)
         
         print("Creating new version for", template["name"])
         create_version(client, template, targetTemplate)
 
-def get_template(templates, targetTemplateName):
+def find_template(templates, targetTemplateName):
     for template in templates:
         if template["name"].lower() == targetTemplateName.lower():
             return template
@@ -92,11 +92,11 @@ def get_template(templates, targetTemplateName):
     return None
 
 def create_version(client, templateToClone, targetTemplate):
-    activeVersionToClone = get_active_version(templateToClone)
+    activeVersionToClone = find_active_version(templateToClone)
     activeVersionToCloneContent = client.get_versions(templateToClone["id"], activeVersionToClone["id"])
 
     createNewVersion = False
-    activeTargetVersion = get_active_version(targetTemplate)
+    activeTargetVersion = find_active_version(targetTemplate)
     if activeTargetVersion != None:
         activeTargetVersionContent = client.get_versions(targetTemplate["id"], activeTargetVersion["id"])
 
@@ -114,7 +114,7 @@ def create_version(client, templateToClone, targetTemplate):
     else:
         print("Skipping new version")
 
-def get_active_version(templates):
+def find_active_version(templates):
     for version in templates["versions"]:
         if version["active"] == 1:
             return version
@@ -132,7 +132,7 @@ def create_template(client, name, templateToClone):
 def main(argv):
     parser = argparse.ArgumentParser(description='Clones the SendGrid active templates into a sibling template of the same name')
     parser.add_argument('apitoken', type=str, help='The api token for contacting SendGrid')
-    parser.add_argument('suffix', type=str, help='The suffix that is present on the templates that is to be cloned')
+    parser.add_argument('sourcesuffix', type=str, help='The suffix that is present on the templates that are to be cloned')
     parser.add_argument('targetsuffix', type=str, help='The target suffix of the cloned templates')
     parser.add_argument('-p', '-prefix', dest='prefix', type=str, help='The prefix that is present on the templates that is to be cloned', required=False)
 
@@ -140,8 +140,8 @@ def main(argv):
 
     client = SendGridClient(args.apitoken)
 
-    currentTemplates, targetTemplates = retrieve_templates(client, args.suffix, args.targetsuffix, args.prefix)
-    clone_templates(client, currentTemplates, targetTemplates, args.suffix, args.targetsuffix)
+    currentTemplates, targetTemplates = retrieve_templates(client, args.sourcesuffix, args.targetsuffix, args.prefix)
+    clone_templates(client, currentTemplates, targetTemplates, args.sourcesuffix, args.targetsuffix)
 
 if  __name__ =='__main__':
     main(sys.argv[1:])

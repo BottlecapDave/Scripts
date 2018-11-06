@@ -13,7 +13,7 @@ For Example, given my account has the following templates
 
 If the following command is used
 ```
-sendgrid-clone.py <<SENDGRID API TOKEN HERE>> "-Test" "-Prod" -p "MyApp" 
+sendgrid-clone.py <<SENDGRID API TOKEN HERE>> "Test" "Prod" -p "MyApp" 
 ```
 
 Then the following will occur to the active version of each of our templates:
