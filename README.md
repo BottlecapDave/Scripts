@@ -18,7 +18,9 @@ sendgrid-clone.py <<SENDGRID API TOKEN HERE>> "Test" "Prod" -p "MyApp"
 
 Then the following will occur to the active version of each of our templates:
 
-* MyApp-Registration-Test -> New version added of source template to existing `MyApp-Registration-Prod`
-* MyApp-Welcome-Test -> New template created called `MyApp-Welcome-Prod` and a version of the source template is added 
-* MyApp2-Registration-Test -> Ignored as it doesn't match our specified prefix
-* MyApp-Registration-Prod -> Ignored as it doesn't match our source suffix, but will be altered due to `MyApp-Registration-Test`
+| Template | Action |
+|----------|--------|
+| MyApp-Registration-Test | New version added of source template to existing `MyApp-Registration-Prod` |
+| MyApp-Welcome-Test | New template created called `MyApp-Welcome-Prod` and a version of the source template is added |
+| MyApp2-Registration-Test | Ignored as it doesn't match our specified prefix |
+| MyApp-Registration-Prod | Ignored as it doesn't match our source suffix, but will be altered due to `MyApp-Registration-Test` |
